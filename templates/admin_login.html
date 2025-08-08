@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="h4 mb-3">Admin Login</h1>
+  <form method="post" class="card card-body" style="max-width:420px">
+    <div class="mb-3">
+      <label class="form-label">Admin PIN</label>
+      <input type="password" class="form-control" name="pin" placeholder="Enter admin PIN" autofocus required>
+      <div class="form-text">Set via environment variable <code>ADMIN_PIN</code>. Default is <code>1234</code>.</div>
+    </div>
+    <button class="btn btn-primary">Login</button>
+  </form>
+{% endblock %}

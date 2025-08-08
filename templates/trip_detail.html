@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h1 class="h4">Trip #{{ trip.id }}</h1>
+    <div class="btn-group">
+      {% if session.house_id == trip.house_id and trip.status != 'completed' %}
+        <a href="{{ url_for('deliver_trip', trip_id=trip.id) }}" class="btn btn-sm btn-primary">Deliver</a>
+        <form method="post" action="{{ url_for('complete_trip', trip_id=trip.id) }}" onsubmit="return confirm('Mark as completed?');">
+          <button class="btn btn-sm btn-outline-secondary">Mark Completed</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-2">
+        <div class="col-md-3"><strong>When:</strong> {{ trip.departure_time.strftime("%Y-%m-%d %H:%M") if trip.departure_time else "Anytime" }}</div>
+        <div class="col-md-4"><strong>To:</strong> {{ trip.village.name }}{% if trip.store %} / {{ trip.store.name }}{% endif %}</div>
+        <div class="col-md-3"><strong>By:</strong> {{ trip.house.name }}</div>
+        <div class="col-md-2"><strong>Status:</strong> <span class="badge text-bg-{{ 'secondary' if trip.status=='completed' else 'info' }}">{{ trip.status }}</span></div>
+        {% if trip.notes %}<div class="col-12"><strong>Notes:</strong> {{ trip.notes }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Matching Open Requests</div>
+        <div class="card-body p-0">
+          <form method="post" action="{{ url_for('claim_requests', trip_id=trip.id) }}">
+            <table class="table mb-0 table-sm align-middle">
+              <thead><tr><th></th><th>Item</th><th>Store</th><th>Qty</th><th>House</th></tr></thead>
+              <tbody>
+                {% for r in matching_requests %}
+                  <tr>
+                    <td><input type="checkbox" name="request_ids" value="{{ r.id }}"></td>
+                    <td>{{ r.item_name }}</td>
+                    <td>{{ r.store.name }}</td>
+                    <td>{{ r.quantity }}</td>
+                    <td>{{ r.house.name }}</td>
+                  </tr>
+                {% else %}
+                  <tr><td colspan="5" class="text-center text-muted p-3">No matches.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% if session.house_id == trip.house_id and matching_requests %}
+              <div class="p-2">
+                <button class="btn btn-sm btn-outline-primary">Claim selected</button>
+              </div>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Claimed on this Trip</div>
+        <div class="card-body p-0">
+          <table class="table mb-0 table-sm align-middle">
+            <thead><tr><th>Item</th><th>Store</th><th>Qty</th><th>House</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for r in claimed_requests %}
+                <tr>
+                  <td>{{ r.item_name }}</td>
+                  <td>{{ r.store.name }}</td>
+                  <td>{{ r.quantity }}</td>
+                  <td>{{ r.house.name }}</td>
+                  <td><span class="badge text-bg-{{ 'success' if r.status == 'fulfilled' else 'warning' }}">{{ r.status }}</span></td>
+                </tr>
+              {% else %}
+                <tr><td colspan="5" class="text-center text-muted p-3">Nothing claimed yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

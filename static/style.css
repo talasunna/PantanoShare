@@ -1,0 +1,7 @@
+body { padding-bottom: 80px; }
+.navbar-brand { font-weight: 700; letter-spacing: 0.2px; }
+.table td, .table th { vertical-align: middle; }
+.badge { font-size: 0.85rem; }
+.form-text { font-size: 0.85rem; }
+footer { position: fixed; bottom: 0; left: 0; right: 0; background: #f8f9fa; border-top: 1px solid #e5e5e5; padding: 6px 0; }
+footer .container { display: flex; justify-content: space-between; font-size: 0.9rem; }

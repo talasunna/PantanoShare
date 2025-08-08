@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">Dashboard</h1>
+    <div class="btn-group">
+      <a href="{{ url_for('new_request') }}" class="btn btn-sm btn-outline-primary">+ New Request</a>
+      <a href="{{ url_for('new_trip') }}" class="btn btn-sm btn-outline-success">+ New Trip</a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Open Requests</div>
+        <div class="card-body p-0">
+          <table class="table mb-0 table-sm align-middle">
+            <thead>
+              <tr><th>Item</th><th>Store</th><th>Qty</th><th>Requested by</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              {% for r in open_requests %}
+                <tr>
+                  <td>{{ r.item_name }}</td>
+                  <td>{{ r.store.name }} ({{ r.store.village.name }})</td>
+                  <td>{{ r.quantity }}</td>
+                  <td>{{ r.house.name }}</td>
+                  <td><span class="badge text-bg-warning">{{ r.status }}</span></td>
+                </tr>
+              {% else %}
+                <tr><td colspan="5" class="text-center text-muted p-3">No open requests.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">Upcoming Trips</div>
+        <div class="card-body p-0">
+          <table class="table mb-0 table-sm align-middle">
+            <thead>
+              <tr><th>When</th><th>To</th><th>By</th><th></th></tr>
+            </thead>
+            <tbody>
+              {% for t in upcoming_trips %}
+                <tr>
+                  <td>{{ t.departure_time.strftime("%Y-%m-%d %H:%M") if t.departure_time else "Anytime" }}</td>
+                  <td>{{ t.village.name }}{% if t.store %} / {{ t.store.name }}{% endif %}</td>
+                  <td>{{ t.house.name }}</td>
+                  <td><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('trip_detail', trip_id=t.id) }}">View</a></td>
+                </tr>
+              {% else %}
+                <tr><td colspan="4" class="text-center text-muted p-3">No upcoming trips.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">Trips</h1>
+    <a href="{{ url_for('new_trip') }}" class="btn btn-sm btn-outline-success">+ New Trip</a>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">Upcoming</div>
+    <div class="card-body p-0">
+      <table class="table mb-0 table-sm align-middle">
+        <thead><tr><th>When</th><th>Village/Store</th><th>By</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for t in upcoming %}
+            <tr>
+              <td>{{ t.departure_time.strftime("%Y-%m-%d %H:%M") if t.departure_time else "Anytime" }}</td>
+              <td>{{ t.village.name }}{% if t.store %} / {{ t.store.name }}{% endif %}</td>
+              <td>{{ t.house.name }}</td>
+              <td><span class="badge text-bg-info">{{ t.status }}</span></td>
+              <td><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('trip_detail', trip_id=t.id) }}">View</a></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="text-center text-muted p-3">No upcoming trips.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Recent</div>
+    <div class="card-body p-0">
+      <table class="table mb-0 table-sm align-middle">
+        <thead><tr><th>When</th><th>Village/Store</th><th>By</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for t in recent %}
+            <tr>
+              <td>{{ t.departure_time.strftime("%Y-%m-%d %H:%M") if t.departure_time else "Anytime" }}</td>
+              <td>{{ t.village.name }}{% if t.store %} / {{ t.store.name }}{% endif %}</td>
+              <td>{{ t.house.name }}</td>
+              <td><span class="badge text-bg-secondary">{{ t.status }}</span></td>
+              <td><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('trip_detail', trip_id=t.id) }}">View</a></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="text-center text-muted p-3">No recent trips.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+{% endblock %}

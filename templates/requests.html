@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">Requests</h1>
+    <a href="{{ url_for('new_request') }}" class="btn btn-sm btn-outline-primary">+ New Request</a>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header">Open</div>
+    <div class="card-body p-0">
+      <table class="table mb-0 table-sm align-middle">
+        <thead><tr><th>Item</th><th>Store</th><th>Qty</th><th>Price limit</th><th>House</th><th>Status</th>{% if session.house_id %}<th></th>{% endif %}</tr></thead>
+        <tbody>
+          {% for r in open_requests %}
+            <tr>
+              <td>{{ r.item_name }}</td>
+              <td>{{ r.store.name }} ({{ r.store.village.name }})</td>
+              <td>{{ r.quantity }}</td>
+              <td>{% if r.price_limit is not none %}€{{ '%.2f'|format(r.price_limit) }}{% else %}—{% endif %}</td>
+              <td>{{ r.house.name }}</td>
+              <td><span class="badge text-bg-warning">{{ r.status }}</span></td>
+              {% if session.house_id and r.house_id == session.house_id and r.status in ['open', 'claimed'] %}
+                <td>
+                  <form method="post" action="{{ url_for('cancel_request', request_id=r.id) }}" onsubmit="return confirm('Cancel this request?');">
+                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                  </form>
+                </td>
+              {% else %}
+                <td></td>
+              {% endif %}
+            </tr>
+          {% else %}
+            <tr><td colspan="7" class="text-center text-muted p-3">No open requests.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Recently Fulfilled</div>
+    <div class="card-body p-0">
+      <table class="table mb-0 table-sm align-middle">
+        <thead><tr><th>Item</th><th>Store</th><th>Qty</th><th>House</th><th>Delivered by</th><th>Total €</th></tr></thead>
+        <tbody>
+          {% for d in recent_deliveries %}
+            <tr>
+              <td>{{ d.item_name }}</td>
+              <td>{{ d.store_name }}</td>
+              <td>{{ d.quantity }}</td>
+              <td>{{ d.to_house }}</td>
+              <td>{{ d.from_house }}</td>
+              <td>€{{ '%.2f'|format(d.total_price) }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="text-center text-muted p-3">No deliveries yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

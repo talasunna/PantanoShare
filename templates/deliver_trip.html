@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="h4 mb-3">Deliver — Trip #{{ trip.id }}</h1>
+  <form method="post" class="card card-body">
+    <p class="text-muted mb-2">Enter actual prices and confirm delivered items.</p>
+    <table class="table table-sm align-middle">
+      <thead><tr><th>Deliver?</th><th>Item</th><th>To House</th><th>Qty</th><th>Unit €</th><th>Total €</th></tr></thead>
+      <tbody>
+        {% for r in claimed_requests %}
+          <tr>
+            <td><input type="checkbox" name="deliver_ids" value="{{ r.id }}" checked></td>
+            <td>{{ r.item_name }}</td>
+            <td>{{ r.house.name }}</td>
+            <td>{{ r.quantity }}</td>
+            <td><input type="number" name="unit_price_{{ r.id }}" step="0.01" min="0" class="form-control form-control-sm" required></td>
+            <td class="text-muted">auto</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="text-center text-muted p-3">No items claimed.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if claimed_requests %}
+      <div class="mt-2">
+        <button class="btn btn-primary">Record deliveries</button>
+      </div>
+    {% endif %}
+  </form>
+{% endblock %}

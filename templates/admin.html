@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">Admin</h1>
+    <div class="btn-group">
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-sm btn-outline-secondary">Admin Logout</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    Use this page to manage Houses (and join codes), Villages, and Stores. Deletions are blocked if data is in use.
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Houses</strong>
+          <form method="post" action="{{ url_for('admin_regen_all_codes') }}">
+            <button class="btn btn-sm btn-outline-warning" onclick="return confirm('Regenerate ALL house join codes? Share the new codes afterwards.');">Regenerate All Codes</button>
+          </form>
+        </div>
+        <div class="card-body p-0">
+          <table class="table mb-0 table-sm align-middle">
+            <thead><tr><th>Name</th><th>Join Code</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+              {% for h in houses %}
+                <tr>
+                  <td>
+                    <form method="post" action="{{ url_for('admin_update_house', house_id=h.id) }}" class="d-flex gap-2">
+                      <input type="text" class="form-control form-control-sm" name="name" value="{{ h.name }}" required>
+                      <button class="btn btn-sm btn-outline-primary">Save</button>
+                    </form>
+                  </td>
+                  <td><code>{{ h.join_code }}</code></td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                      <form method="post" action="{{ url_for('admin_regen_code', house_id=h.id) }}">
+                        <button class="btn btn-outline-warning" title="Regenerate code" onclick="return confirm('Regenerate code for {{ h.name }}?');">New code</button>
+                      </form>
+                      <form method="post" action="{{ url_for('admin_delete_house', house_id=h.id) }}" onsubmit="return confirm('Delete this house? This is only allowed if unused.');">
+                        <button class="btn btn-outline-danger">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="3" class="text-center text-muted p-3">No houses.</td></tr>
+              {% endfor %}
+              <tr>
+                <form method="post" action="{{ url_for('admin_add_house') }}">
+                  <td><input type="text" class="form-control form-control-sm" name="name" placeholder="New house name" required></td>
+                  <td class="text-muted">auto</td>
+                  <td class="text-end"><button class="btn btn-sm btn-success">Add House</button></td>
+                </form>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header"><strong>Villages</strong></div>
+        <div class="card-body p-0">
+          <table class="table mb-0 table-sm align-middle">
+            <thead><tr><th>Name</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+              {% for v in villages %}
+                <tr>
+                  <td>
+                    <form method="post" action="{{ url_for('admin_update_village', village_id=v.id) }}" class="d-flex gap-2">
+                      <input type="text" class="form-control form-control-sm" name="name" value="{{ v.name }}" required>
+                      <button class="btn btn-sm btn-outline-primary">Save</button>
+                    </form>
+                  </td>
+                  <td class="text-end">
+                    <form method="post" action="{{ url_for('admin_delete_village', village_id=v.id) }}" onsubmit="return confirm('Delete this village? Only if unused.');">
+                      <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="2" class="text-center text-muted p-3">No villages.</td></tr>
+              {% endfor %}
+              <tr>
+                <form method="post" action="{{ url_for('admin_add_village') }}">
+                  <td><input type="text" class="form-control form-control-sm" name="name" placeholder="New village name" required></td>
+                  <td class="text-end"><button class="btn btn-sm btn-success">Add Village</button></td>
+                </form>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header"><strong>Stores</strong></div>
+        <div class="card-body p-0">
+          <table class="table mb-0 table-sm align-middle">
+            <thead><tr><th>Name</th><th>Village</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+              {% for s in stores %}
+                <tr>
+                  <td>
+                    <form method="post" action="{{ url_for('admin_update_store', store_id=s.id) }}" class="row g-2 align-items-center">
+                      <div class="col-md-5">
+                        <input type="text" class="form-control form-control-sm" name="name" value="{{ s.name }}" required>
+                      </div>
+                      <div class="col-md-5">
+                        <select name="village_id" class="form-select form-select-sm">
+                          {% for v in villages %}
+                            <option value="{{ v.id }}" {% if v.id == s.village_id %}selected{% endif %}>{{ v.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-md-2 text-end">
+                        <button class="btn btn-sm btn-outline-primary">Save</button>
+                      </div>
+                    </form>
+                  </td>
+                  <td>{{ s.village.name }}</td>
+                  <td class="text-end">
+                    <form method="post" action="{{ url_for('admin_delete_store', store_id=s.id) }}" onsubmit="return confirm('Delete this store? Only if unused.');">
+                      <button class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              {% else %}
+                <tr><td colspan="3" class="text-center text-muted p-3">No stores.</td></tr>
+              {% endfor %}
+              <tr>
+                <form method="post" action="{{ url_for('admin_add_store') }}" class="row g-2 align-items-center p-2">
+                  <div class="col-md-5"><input type="text" class="form-control form-control-sm" name="name" placeholder="New store" required></div>
+                  <div class="col-md-5">
+                    <select name="village_id" class="form-select form-select-sm" required>
+                      <option value="">Choose village…</option>
+                      {% for v in villages %}
+                        <option value="{{ v.id }}">{{ v.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-2 text-end"><button class="btn btn-sm btn-success">Add Store</button></div>
+                </form>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
