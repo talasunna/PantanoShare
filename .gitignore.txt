@@ -1,7 +1,33 @@
+# Virtual environments
+venv/
 .venv/
+
+# Python cache
 __pycache__/
-*.pyc
-app.db
-house_codes.txt
-.env
+*.py[cod]
+*$py.class
+
+# macOS
 .DS_Store
+
+# Local environment / secrets
+.env
+*.env
+
+# SQLite databases
+*.db
+
+# Project-specific files
+house_codes.txt
+
+# Byte-compiled / optimized / DLL files
+*.pyo
+*.so
+
+# VSCode settings (optional)
+.vscode/
+
+# Pytest / coverage files
+.pytest_cache/
+.coverage
+htmlcov/
